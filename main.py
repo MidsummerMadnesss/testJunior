@@ -23,7 +23,17 @@ response = requests.post(report_url, json=payload, headers=headers)
 if response.status_code == 200:
     with open("tasks_report.csv", "wb") as f:
         f.write(response.content)
-    print("CSV file 'tasks_report.csv' saved successfully.")
+
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv("tasks_report.csv")
+
+    # Sort the DataFrame by the "time started" column
+    df.sort_values(by="Start Time", inplace=True)
+
+    # Save the sorted DataFrame back to the same CSV file
+    df.to_csv("tasks_report.csv", index=False)
+
+    print("CSV file 'tasks_report.csv' sorted and saved successfully.")
 else:
     error_message = response.text
     print("Error generating report. Status code:", response.status_code)
