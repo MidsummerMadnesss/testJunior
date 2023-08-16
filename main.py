@@ -33,22 +33,28 @@ if response.status_code == 200:
     # Save the sorted DataFrame back to the same CSV file
     df.to_csv("tasks_report.csv", index=False)
 
-    print("CSV file 'tasks_report.csv' sorted and saved successfully.")
 else:
     error_message = response.text
     print("Error generating report. Status code:", response.status_code)
     print("Error message:", error_message)
 
+payload = {"dateRangeStart": "2023-01-22T00:00:00.000",
+"dateRangeEnd": "2023-12-22T23:59:59.000",
+"detailedFilter": {
+"page": 1,
+"pageSize": 50}}
+
+response2 = requests.post(report_url, json=payload, headers=headers)
+
+print(response2.json())
+
 url = "https://api.clockify.me/api/v1/workspaces/{workspaceId}/projects/{projectId}/tasks"
 
-headers1 = {
-    "x-api-key": "NTk4NTRjODctOGI0MC00MDhkLWE5NDMtOGFiN2EwOTc0YWNl"
-}
+response = requests.get(url.format(workspaceId=workspace_id, projectId=project_id), headers=headers)
+print(" ")
 
-response = requests.get(url.format(workspaceId=workspace_id, projectId=project_id), headers=headers1)
 print(response.json())
 data = response.json()
 df = pd.DataFrame(data)
 sorted_df = df.sort_values(by="name")
 sorted_df.to_csv("tasks.csv", index=False)
-print("Done!")
